@@ -2,12 +2,9 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<h4 class="modal-header ">Welcome .Net Core jQuery Ajax Sample</h4>
 
-<div class="row">
+<div class="row m-4">
     <div class="col-md-6">
         <div class="p-2">
             <h4 class="text-center">Get User By Id</h4>
@@ -28,7 +25,8 @@
         </div>
     </div>
     <div class="col-md-12">
-        <div class="p-2">
+        <div class="p-2 border-info">
+            <h4 class="text-center">Add User</h4>
             <label class="form-check-label">Id</label>
             <input type="text" class="form-control" id="addUserId" />
             <label class="form-check-label">Name</label>
@@ -46,14 +44,16 @@
         $(document).ready(function () {
             $('#getUserById').click(function () {
                 let userid = $('#userId').val();
-                $.ajax({
-                    contentType: "application/json; charset=Utf-8;",
-                    dataType: "json",
-                    type: "Get",
-                    url: "Home/GetUser",
-                    data: { id: userid },
-                    success: function (result) {
-                        let htmlString = `<table class="table table-hover table-sm">
+                if (userid.trim() != '') {
+                    $.ajax({
+                        contentType: "application/json; charset=Utf-8;",
+                        dataType: "json",
+                        type: "Get",
+                        url: "Home/GetUser",
+                        data: { id: userid },
+                        success: function (result) {
+                            $('[type="text"]').val("");
+                            let htmlString = `<table class="table table-hover table-sm">
                                             <tr>
                                                 <th>User ID</th>
                                                 <td>${result.id}</td>
@@ -63,9 +63,10 @@
                                                 <td>${result.name}</td>
                                             </tr>
                                           </table>`;
-                        $('#UserById').html(htmlString);
-                    }
-                });
+                            $('#UserById').html(htmlString);
+                        }
+                    });
+                };
             });
 
             $('#getAllUsers').click(function () {
@@ -99,21 +100,17 @@
                     Id: $("#addUserId").val(),
                     Name: $("#addUserName").val()
                 };
-                $.ajax({
-                    type: "Post",
-                    url: "Home/AddUser",
-                    data: user,
-                    success: function (result) {
-                        alert(result.name + " başarıyla eklendi");
-                        //$('#loader').fadeOut();
-                        //let table = "<table class='table table-hover table - sm'> <tr><th>User Id</th><th>User Name</th></tr>";
-                        //$.each(result, (index, value) => {
-                        //    table += `<tr><td>${value.id}</td><td>${value.name}</td></tr>`;
-                        //});
-                        //table += "</table>";
-                        //$('#userList').html(table);
-                    }
-                });
+                if (user.Id.trim() != '' && user.Name.trim() != '') {
+                    $.ajax({
+                        type: "Post",
+                        url: "Home/AddUser",
+                        data: user,
+                        success: function (result) {
+                            alert(result.name + " başarıyla eklendi");
+                            $('[type="text"]').val("");
+                        }
+                    });
+                };
             });
         });
     </script>
