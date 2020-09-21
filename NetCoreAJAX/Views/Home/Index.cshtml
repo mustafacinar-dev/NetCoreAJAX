@@ -1,0 +1,120 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="p-2">
+            <h4 class="text-center">Get User By Id</h4>
+            <input type="text" id="userId" class="form-control" />
+            <input type="button" id="getUserById" class="btn btn-success btn-sm m-2" value="Get User" />
+        </div>
+        <div class="p-2" id="UserById">
+
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="p-2">
+            <h4 class="text-center">Get All Users</h4>
+            <input type="button" id="getAllUsers" class="btn btn-info btn-block" value="Get All Users" />
+        </div>
+        <div class="p-2" id="userList">
+           
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="p-2">
+            <label class="form-check-label">Id</label>
+            <input type="text" class="form-control" id="addUserId" />
+            <label class="form-check-label">Name</label>
+            <input type="text" class="form-control" id="addUserName" />
+        </div>
+        <button type="button" id="addUser" class="btn btn-block btn-info">Save</button>
+    </div>
+</div>
+
+
+
+@section UserScripts
+{
+    <script>
+        $(document).ready(function () {
+            $('#getUserById').click(function () {
+                let userid = $('#userId').val();
+                $.ajax({
+                    contentType: "application/json; charset=Utf-8;",
+                    dataType: "json",
+                    type: "Get",
+                    url: "Home/GetUser",
+                    data: { id: userid },
+                    success: function (result) {
+                        let htmlString = `<table class="table table-hover table-sm">
+                                            <tr>
+                                                <th>User ID</th>
+                                                <td>${result.id}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Name</th>
+                                                <td>${result.name}</td>
+                                            </tr>
+                                          </table>`;
+                        $('#UserById').html(htmlString);
+                    }
+                });
+            });
+
+            $('#getAllUsers').click(function () {
+                $.ajax({
+                    contentType: "application/json; charset=Utf-8;",
+                    dataType: "json",
+                    type: "Get",
+                    url: "Home/List",
+                    beforeSend: function () {
+                        let loaderHtml = ` <div id="loader" class="d-flex align-items-center" style="display:none!important">
+                                                <strong>Loading...</strong>
+                                                <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                                            </div>`;
+                        $('#userList').html(loaderHtml);
+                        $('#loader').fadeIn();
+                    },
+                    success: function (result) {
+                        $('#loader').fadeOut();
+                        let table = "<table class='table table-hover table - sm'> <tr><th>User Id</th><th>User Name</th></tr>";
+                        $.each(result, (index, value) => {
+                            table += `<tr><td>${value.id}</td><td>${value.name}</td></tr>`;
+                        });
+                        table += "</table>";
+                        $('#userList').html(table);
+                    }
+                });
+            });
+
+            $('#addUser').click(function () {
+                let user = {
+                    Id: $("#addUserId").val(),
+                    Name: $("#addUserName").val()
+                };
+                $.ajax({
+                    type: "Post",
+                    url: "Home/AddUser",
+                    data: user,
+                    success: function (result) {
+                        alert(result.name + " başarıyla eklendi");
+                        //$('#loader').fadeOut();
+                        //let table = "<table class='table table-hover table - sm'> <tr><th>User Id</th><th>User Name</th></tr>";
+                        //$.each(result, (index, value) => {
+                        //    table += `<tr><td>${value.id}</td><td>${value.name}</td></tr>`;
+                        //});
+                        //table += "</table>";
+                        //$('#userList').html(table);
+                    }
+                });
+            });
+        });
+    </script>
+}
